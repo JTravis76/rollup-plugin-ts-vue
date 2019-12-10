@@ -1,7 +1,10 @@
 {
   "name": "rollup-plugin-ts-vue",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "Vue bundler with Typescript and Rollup",
+  "keywords": [
+    "vue", "typescript", "rollup", "scss"
+  ],
   "main": "dist/rollup-plugin-ts-vue.cjs.js",
   "module": "dist/rollup-plugin-ts-vue.es.js",
   "scripts": {
@@ -10,6 +13,10 @@
   },
   "author": "Jeremy Travis",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JTravis76/rollup-plugin-ts-vue.git"
+},
   "dependencies": {
     "@types/node": "^12.12.7",
     "resolve": "^1.10.0",
