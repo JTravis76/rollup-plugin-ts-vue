@@ -80,7 +80,7 @@ function convertToTs(code) {
     var style = "";
     var start = code.indexOf('<template>');
     var end = code.lastIndexOf('</template>');
-    template = code.substring(start, end).replace('<template>', "").replace("</template>", "");
+    template = code.substring(start + 10, end);
     template = template.replace(/(\r\n|\n|\r)/gm, "").replace(/\s+/g, " ").trim();
     start = code.indexOf('<script lang="ts">');
     end = code.indexOf('</script>');

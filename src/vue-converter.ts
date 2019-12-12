@@ -8,7 +8,7 @@ export function convertToTs(code: string): {script: string, style: string} {
     // Parse Template
     var start = code.indexOf('<template>');
     var end = code.lastIndexOf('</template>');
-    template = code.substring(start, end).replace('<template>',"").replace("</template>","");
+    template = code.substring(start + 10, end);
     template = template.replace(/(\r\n|\n|\r)/gm,"").replace(/\s+/g," ").trim();
 
     // Parse Script

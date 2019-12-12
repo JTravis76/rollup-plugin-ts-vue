@@ -2,11 +2,56 @@
 
 Plugin for Rollup to bundle Vue components written in TypeScript.
 
+This plugin was in inspired by [rollup-plugin-typescript](https://github.com/rollup/rollup-plugin-typescript), which uses Typescript's API. Added support for SCSS and Vue.
+
+Feel free to use my full boilerplate project [here on Github](https://github.com/JTravis76/vue-base-template).
+
 ## Why
 Why another plugin?? I love writing in Typescript and love the Vue single component concept. However, the similar plugins rely on other tools to complete the job. Wanted a way to reduce over-head of other tool-sets like; Babel, Webpack, etc. and replace with a simple one-man job.
 
 > NOTE: currently `scoped` styles are not supported. Work-in-Progess
 
+## Rollup Config
+
+```ts
+import resolve from "./node_modules/@rollup/plugin-node-resolve/dist/index.es";
+import vue from "./node_modules/rollup-plugin-ts-vue/dist/rollup-plugin-ts-vue.es";
+import scss from "./node_modules/rollup-plugin-scss/index.es";
+
+export default {
+    input: "./src/main.ts",
+    output: {
+        name: "app",
+        format: "iife",
+        file: "./public/js/app.js",
+        globals: {
+            "vue": "Vue",
+            "vue-router": "VueRouter",
+            "vuex": "Vuex",
+            "vue-property-decorator": "VueClassComponent",
+            "vue-class-component": "VueClassComponent"
+            "axios": "axios"
+        }
+    },
+    plugins: [
+        resolve(),
+        // null == defaults to tsconfig.json
+        vue(null, {
+            output: "./public/css/vue-bundle.css"
+        }),
+        scss({
+            output: "./public/css/site.css"
+        })
+    ],
+    external: [
+        "vue", 
+        "vue-router", 
+        "vuex", 
+        "vue-class-component",
+        "axios"
+    ]
+}
+```
 ## Examples
 
 *Standard Vue Mixin Object*
@@ -96,3 +141,8 @@ div {
 }
 </style>
 ```
+
+## Change Log
+
+* 0.1.0 inital release
+* 0.2.0 fix nested template tags being removed.
