@@ -3,13 +3,16 @@
   "version": "0.2.0",
   "description": "Vue bundler with Typescript and Rollup",
   "keywords": [
-    "vue", "typescript", "rollup", "scss"
+    "vue",
+    "typescript",
+    "rollup",
+    "scss"
   ],
   "main": "dist/rollup-plugin-ts-vue.cjs.js",
   "module": "dist/rollup-plugin-ts-vue.es.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "rollup": "rollup -c"
+    "build": "rollup -c"
   },
   "author": "Jeremy Travis",
   "license": "MIT",
@@ -20,6 +23,7 @@
   "dependencies": {
     "@types/node": "^12.12.7",
     "resolve": "^1.10.0",
+    "rollup": "^1.27.13",
     "rollup-plugin-typescript": "^1.0.1",
     "rollup-pluginutils": "^2.5.0",
     "tslib": "^1.10.0",

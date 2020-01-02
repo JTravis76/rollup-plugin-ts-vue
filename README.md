@@ -7,9 +7,9 @@ This plugin was in inspired by [rollup-plugin-typescript](https://github.com/rol
 Feel free to use my full boilerplate project [here on Github](https://github.com/JTravis76/vue-base-template).
 
 ## Why
-Why another plugin?? I love writing in Typescript and love the Vue single component concept. However, the similar plugins rely on other tools to complete the job. Wanted a way to reduce over-head of other tool-sets like; Babel, Webpack, etc. and replace with a simple one-man job.
+Why another plugin?? I love writing in Typescript and love the Vue single component concept. However, the similar plugins rely on other tools to complete the job. Wanted a way to reduce over-head of other tool-sets like; Babel, Webpack, etc. and replace with a simpler tool.
 
-> NOTE: currently `scoped` styles are not supported. Work-in-Progess
+> NOTE: currently `scoped` styles are **partially** supported. Work-in-Progess
 
 ## Rollup Config
 
@@ -31,7 +31,9 @@ export default {
             "vue-property-decorator": "VueClassComponent",
             "vue-class-component": "VueClassComponent"
             "axios": "axios"
-        }
+        },
+        sourcemap: true,
+        sourcemapFile: "./public/js/app.js.map"
     },
     plugins: [
         resolve(),

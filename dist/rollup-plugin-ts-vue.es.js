@@ -78,16 +78,51 @@ function convertToTs(code) {
     var template = "";
     var script = "";
     var style = "";
-    var start = code.indexOf('<template>');
-    var end = code.lastIndexOf('</template>');
-    template = code.substring(start + 10, end);
-    template = template.replace(/(\r\n|\n|\r)/gm, "").replace(/\s+/g, " ").trim();
+    var start = -1;
+    var end = -1;
+    start = code.indexOf('<template>');
+    if (start > -1) {
+        end = code.lastIndexOf('</template>');
+        template = code.substring(start + 10, end);
+        template = template.replace(/(\r\n|\n|\r)/gm, "").replace(/\s+/g, " ").trim();
+    }
     start = code.indexOf('<script lang="ts">');
-    end = code.indexOf('</script>');
-    script = code.substring(start, end).replace('<script lang="ts">', "").replace("</script>", "");
+    if (start > -1) {
+        end = code.indexOf('</script>');
+        script = code.substring(start + 18, end);
+    }
     start = code.indexOf('<style lang="scss">');
-    end = code.indexOf('</style>');
-    style = code.substring(start, end).replace("<style lang=\"scss\">", "").replace("</style>", "");
+    if (start > -1) {
+        end = code.indexOf('</style>');
+        style = code.substring(start + 19, end);
+    }
+    start = code.indexOf('<style lang="scss" scoped>');
+    if (start > -1) {
+        end = code.indexOf('</style>');
+        style = code.substring(start + 26, end);
+        var uid = UID();
+        var re = /(\.\w+)/gi;
+        var cssClass = re.exec(style.toString());
+        if (cssClass !== null) {
+            var z = cssClass[0];
+            style = style.replace(z, z + "-" + uid);
+            var s = z.substring(1, z.length);
+            re = /class="([^\\"]|\\")*"/g;
+            var htmlClass = re.exec(template.toString());
+            for (var i = 0; i < htmlClass.length; i++) {
+                var u = htmlClass[i].replace(s, cssClass[0] + "-" + uid);
+                template = template.replace(htmlClass[i], u);
+            }
+        }
+        var tags = /[a-z][0-9]+\s{/gi.exec(style.toString());
+        for (var i = 0; i < tags.length; i++) {
+            var exp_1 = "<" + tags[i].replace(" {", "");
+            var reArray = new RegExp(exp_1, 'g').exec(template.toString());
+            for (var i_1 = 0; i_1 < reArray.length; i_1++) {
+                template = template.replace(reArray[i_1], reArray[i_1] + ' class="' + uid + '"');
+            }
+        }
+    }
     var exp = /\bimport\W+(?:\w+\W+){1,9}?vue-property-decorator\b/gi;
     if (exp.test(script)) {
         exp = /@Component[\s\r\nexport]/gm;
@@ -109,6 +144,9 @@ function convertToTs(code) {
         script: script,
         style: style
     };
+}
+function UID() {
+    return (((1 + Math.random()) * 0x10000000) | 0).toString(16).substring(1);
 }
 
 var TSLIB_ID = '\0tslib';
