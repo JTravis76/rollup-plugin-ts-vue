@@ -38,37 +38,62 @@ export function convertToTs(code: string): {script: string, style: string} {
          * Scoped CSS can be applied to; HTML tag, CSS Class. EX: h1 {} .tooltip {}
          * Element Ids should already be unique. EX: <input id="text-box1" />
         */
-        let uid = UID();
+        const uid = UID();
+        //remove all whitespaces
+        style = style.replace(/\s/g, "");
 
-        // CSS Class object
-        let re = /(\.\w+)/gi;
-        let cssClass = re.exec(style.toString());
-        if (cssClass !== null) {
-            let z = cssClass[0];
-            style = style.replace(z, z + "-" + uid);
-            //remove starting period
-            let s = z.substring(1, z.length);
-
+        //== CSS Class; .home { } convert to .home-abc1234 { }
+        let z;
+        let regex1 = RegExp(/\.\w+/, "g");
+        while (null != (z = regex1.exec(style) )) {
+            let cssClass = z[0] as string;
+            let uniqueCss = cssClass + "-" + uid;
+            style = style.replace(cssClass, uniqueCss);
+            
             /** Find all HTML class attribute in template and replace CSS class with new one */
-            re = /class="([^\\"]|\\")*"/g;
-            let htmlClass = re.exec(template.toString());
-            for (let i = 0; i < htmlClass.length; i++) {
-                let u = htmlClass[i].replace(s, cssClass[0] + "-" + uid);
-                template = template.replace(htmlClass[i], u);
+            let regex2 = RegExp(/class="([^\\"]|\\")*"/, "g");
+            while (null != (z = regex2.exec(template.toString()))) {
+                let htmlClass = z[0] as string;
+                //remove starting period
+                cssClass = cssClass.replace(".", "");
+
+                //update css class with newly unique css class
+                let newCss = htmlClass.replace(cssClass, uniqueCss);
+                template = template.replace(htmlClass, newCss);
+                
             }
         }
+        //== CSS Tag;  p { } convert to p.pabc123 { }
+        // Create a css class and append to html tag
+        regex1 = RegExp(/(}|;)\w+{/, "g");
+        while (null != (z = regex1.exec(style))) {
+           let cssClass = z[0] as string;
+           let tag = cssClass.replace("}", "").replace("{", "");
+           style = style.replace(cssClass, "}" + tag + "." + tag + uid + "{");
+           if (cssClass.startsWith(";")) {
+               tag = cssClass.replace(";", "");
+               style = style.replace(cssClass, ";" + tag + "." + tag + uid + "{");
+           }
 
-        // Add CSS Class to HTML tag
-        //TODO: check HTML tag for existing class attribute, if so, append it
-        let tags = /[a-z][0-9]+\s{/gi.exec(style.toString());
-        for (let i = 0; i < tags.length; i++) {
-            let exp = "<" + tags[i].replace(" {", "");
-            let reArray = new RegExp(exp, 'g').exec(template.toString());
-            for (let i = 0; i < reArray.length; i++) {
-                template = template.replace(reArray[i], reArray[i] + ' class="' + uid + '"');
-            }            
+            // Find HTML tag (straight tag without CSS class ); <p> <div> <span> <h1>, etc
+            let regex2 = RegExp(/<[a-z]\w*>/, "g");
+            while (null != (z = regex2.exec(template.toString()))) {
+                let htmlTag = z[0] as string;
+                if (htmlTag.indexOf("<" + tag + ">") > -1) {
+                    let newHtmlCss = htmlTag.replace(">", ' class="' + tag + uid + '">');
+                    template = template.replace(htmlTag, newHtmlCss);
+                }
+            }
+
+            // check for anchor tag, then add CSS class to all <router-link >s
+            //TODO: need to check if existing class attribute
+            if (tag === "a") {
+                template = template.replace(/(<router-link\s)/g, '<router-link class="' + tag + uid + '"');
+            }
         }
-        //TODO:: more work and testing
+        //console.log(template);
+        //TODO: append css class list for scoped html tag
+        //TODO: include starting css tag with scoped; div{}h1{} (div is currently not picked up by RegEx)
 
         /** End of 'scoped' section */
     }

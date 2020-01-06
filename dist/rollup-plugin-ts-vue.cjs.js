@@ -104,25 +104,40 @@ function convertToTs(code) {
         end = code.indexOf('</style>');
         style = code.substring(start + 26, end);
         var uid = UID();
-        var re = /(\.\w+)/gi;
-        var cssClass = re.exec(style.toString());
-        if (cssClass !== null) {
-            var z = cssClass[0];
-            style = style.replace(z, z + "-" + uid);
-            var s = z.substring(1, z.length);
-            re = /class="([^\\"]|\\")*"/g;
-            var htmlClass = re.exec(template.toString());
-            for (var i = 0; i < htmlClass.length; i++) {
-                var u = htmlClass[i].replace(s, cssClass[0] + "-" + uid);
-                template = template.replace(htmlClass[i], u);
+        style = style.replace(/\s/g, "");
+        var z = void 0;
+        var regex1 = RegExp(/\.\w+/, "g");
+        while (null != (z = regex1.exec(style))) {
+            var cssClass = z[0];
+            var uniqueCss = cssClass + "-" + uid;
+            style = style.replace(cssClass, uniqueCss);
+            var regex2 = RegExp(/class="([^\\"]|\\")*"/, "g");
+            while (null != (z = regex2.exec(template.toString()))) {
+                var htmlClass = z[0];
+                cssClass = cssClass.replace(".", "");
+                var newCss = htmlClass.replace(cssClass, uniqueCss);
+                template = template.replace(htmlClass, newCss);
             }
         }
-        var tags = /[a-z][0-9]+\s{/gi.exec(style.toString());
-        for (var i = 0; i < tags.length; i++) {
-            var exp_1 = "<" + tags[i].replace(" {", "");
-            var reArray = new RegExp(exp_1, 'g').exec(template.toString());
-            for (var i_1 = 0; i_1 < reArray.length; i_1++) {
-                template = template.replace(reArray[i_1], reArray[i_1] + ' class="' + uid + '"');
+        regex1 = RegExp(/(}|;)\w+{/, "g");
+        while (null != (z = regex1.exec(style))) {
+            var cssClass = z[0];
+            var tag = cssClass.replace("}", "").replace("{", "");
+            style = style.replace(cssClass, "}" + tag + "." + tag + uid + "{");
+            if (cssClass.startsWith(";")) {
+                tag = cssClass.replace(";", "");
+                style = style.replace(cssClass, ";" + tag + "." + tag + uid + "{");
+            }
+            var regex2 = RegExp(/<[a-z]\w*>/, "g");
+            while (null != (z = regex2.exec(template.toString()))) {
+                var htmlTag = z[0];
+                if (htmlTag.indexOf("<" + tag + ">") > -1) {
+                    var newHtmlCss = htmlTag.replace(">", ' class="' + tag + uid + '">');
+                    template = template.replace(htmlTag, newHtmlCss);
+                }
+            }
+            if (tag === "a") {
+                template = template.replace(/(<router-link\s)/g, '<router-link class="' + tag + uid + '"');
             }
         }
     }
