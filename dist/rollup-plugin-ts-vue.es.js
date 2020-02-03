@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import { DiagnosticCategory } from 'typescript';
 import { existsSync, readFileSync, statSync, writeFile } from 'fs';
-import { sep } from 'path';
+import { sep, extname } from 'path';
 import { createFilter } from 'rollup-pluginutils';
 import resolveId from 'resolve';
 import NodeSass from 'node-sass';
@@ -248,6 +248,25 @@ function vue(options, scssOptions) {
             });
             if (fatalError) {
                 throw new Error("There were TypeScript errors transpiling");
+            }
+            if (extname(id) === ".vue" || extname(id) === ".ts") {
+                var g_dirDepth = 0;
+                var p = id.replace(/\//g, '\\');
+                p = p.replace(__dirname + "\\", "");
+                if (p.startsWith('src')) {
+                    g_dirDepth = p.split('\\').length - 2;
+                }
+                var s = "from \"";
+                if (g_dirDepth > 0) {
+                    for (var d = 0; d < g_dirDepth; d++) {
+                        s += "../";
+                    }
+                }
+                else {
+                    s += "./";
+                }
+                var exp = /(from\s"@\/)/gm;
+                transformed.outputText = transformed.outputText.replace(exp, s);
             }
             return {
                 code: transformed.outputText,

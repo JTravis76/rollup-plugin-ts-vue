@@ -9,7 +9,7 @@ Feel free to use my full boilerplate project [here on Github](https://github.com
 ## Why
 Why another plugin?? I love writing in Typescript and love the Vue single component concept. However, the similar plugins rely on other tools to complete the job. Wanted a way to reduce over-head of other tool-sets like; Babel, Webpack, etc. and replace with a simpler tool.
 
-> NOTE: currently `scoped` styles are **partially** supported. Work-in-Progess
+> NOTE: currently `scoped` styles are **partially** supported and in-beta. Work-in-Progess
 
 ## Rollup Config
 
@@ -144,7 +144,24 @@ div {
 </style>
 ```
 
+## Typescript Path Translation
+When using paths in tsconfig, rollup doesn't understand how to translate so it may resolve the module. When using something like this; `import MyMod from "@/components/my-module"`. Rollup will assuming its an external dependencies.
+
+```json
+{
+    ...
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [ "src/*" ]
+    }
+
+    ...
+}
+```
+
 ## Change Log
 
 * 0.1.0 inital release
 * 0.2.0 fix nested template tags being removed.
+* 0.3.0 scoped CSS (beta) and Typescript Path Translation

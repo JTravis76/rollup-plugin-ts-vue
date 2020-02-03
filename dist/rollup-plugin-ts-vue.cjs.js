@@ -252,6 +252,25 @@ function vue(options, scssOptions) {
             if (fatalError) {
                 throw new Error("There were TypeScript errors transpiling");
             }
+            if (path.extname(id) === ".vue" || path.extname(id) === ".ts") {
+                var g_dirDepth = 0;
+                var p = id.replace(/\//g, '\\');
+                p = p.replace(__dirname + "\\", "");
+                if (p.startsWith('src')) {
+                    g_dirDepth = p.split('\\').length - 2;
+                }
+                var s = "from \"";
+                if (g_dirDepth > 0) {
+                    for (var d = 0; d < g_dirDepth; d++) {
+                        s += "../";
+                    }
+                }
+                else {
+                    s += "./";
+                }
+                var exp = /(from\s"@\/)/gm;
+                transformed.outputText = transformed.outputText.replace(exp, s);
+            }
             return {
                 code: transformed.outputText,
                 map: transformed.sourceMapText ? JSON.parse(transformed.sourceMapText) : null

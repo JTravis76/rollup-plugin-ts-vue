@@ -7,6 +7,7 @@ import resolveHost from './resolveHost';
 import resolveId from 'resolve';
 import {convertToTs} from "./vue-converter";
 import NodeSass from "node-sass";
+import * as path from "path";
 
 const TSLIB_ID = '\0tslib';
 
@@ -128,7 +129,37 @@ export default function vue (options:IOptions = {}, scssOptions:IScssOptions) {
 
 			if ( fatalError ) {
 				throw new Error( `There were TypeScript errors transpiling` );
-			}
+            }
+            
+            /**
+             * When using Paths in tsconfig, Rollup cannot translate.
+             * Below calculate and returns the directory depth.
+             * Concat the 'N' depth to match the related path for rollup to understand.
+             * EX: 'from "@/components/index"' TO 'from "../../components/index"'
+             */
+            if (path.extname(id) === ".vue" || path.extname(id) === ".ts") {
+                let g_dirDepth = 0;
+                // fix all slashes and remove root directory
+                let p = id.replace(/\//g, '\\');
+                p = p.replace(__dirname + "\\", "");
+
+                if (p.startsWith('src')) {
+                    g_dirDepth = p.split('\\').length - 2;
+                }
+
+                let s = "from \"";
+                if (g_dirDepth > 0) {
+                    for (let d = 0; d < g_dirDepth; d++) {
+                        s += "../";
+                    }
+                }
+                else {
+                    s += "./";
+                }
+
+                let exp = /(from\s"@\/)/gm;
+                transformed.outputText = transformed.outputText.replace(exp, s);
+            }
 
 			return {
 				code: transformed.outputText,
