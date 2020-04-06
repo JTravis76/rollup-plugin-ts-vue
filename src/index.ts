@@ -6,7 +6,8 @@ import { endsWith } from './string';
 import resolveHost from './resolveHost';
 import resolveId from 'resolve';
 import {convertToTs} from "./vue-converter";
-import NodeSass from "node-sass";
+//import NodeSass from "node-sass";
+import sass from "sass";
 import * as path from "path";
 
 const TSLIB_ID = '\0tslib';
@@ -15,10 +16,11 @@ export default function vue (options:IOptions = {}, scssOptions:IScssOptions) {
 	options = Object.assign({}, options);
 	scssOptions = Object.assign({}, scssOptions);
 
-	scssOptions.output = scssOptions.output ? scssOptions.output : "./public/css/vue-bundle.css";
+    scssOptions.output = scssOptions.output ? scssOptions.output : "./dist/css/site.css";
+    scssOptions.includePaths = scssOptions.includePaths ? scssOptions.includePaths : ["src/scss"]
 
     const filter = createFilter(
-		[ '*.vue+(|x)', '**/*.vue+(|x)','*.ts+(|x)', '**/*.ts+(|x)' ],
+		[ '*.vue+(|x)', '**/*.vue+(|x)','*.ts+(|x)', '**/*.ts+(|x)', '**/*.css', '*.sass', '**/*.scss' ],
 		[ '*.d.ts', '**/*.d.ts' ] );
 
     const typescript = options.typescript || ts;
@@ -97,7 +99,12 @@ export default function vue (options:IOptions = {}, scssOptions:IScssOptions) {
 				if (obj.style.trim().length > 0) {
                     styles[id] = obj.style;
                 }
-			}
+            }
+            else if (id.lastIndexOf('.scss') > -1) {
+                styles[id] = code;
+                //return with a comment so rollup is happy that we process something
+                return { code: "//== Adding css styles ==", map: null };
+            }
 
 			const transformed = typescript.transpileModule( code, {
 				fileName: id,
@@ -177,11 +184,16 @@ export default function vue (options:IOptions = {}, scssOptions:IScssOptions) {
             }
 
             if (scss.length > 0) {
-                var css = NodeSass.renderSync(Object.assign({
-                    data: scss
-                }, null)).css.toString();
+                // let css = NodeSass.renderSync(Object.assign({
+                //     data: scss
+                // }, null)).css.toString();
+
+                let css = sass.renderSync({
+                    data: scss,
+                    includePaths: scssOptions.includePaths
+                }).css.toString();
             
-                var dest = scssOptions.output;
+                let dest = scssOptions.output;
                 fs.writeFile(dest, css, (err) => {
                     if (err) {
                         console.error(red(err.message))      
@@ -219,5 +231,6 @@ interface IOptions {
 }
 
 interface IScssOptions {
-	output?: string;
+    output?: string;
+    includePaths?: string[];
 }

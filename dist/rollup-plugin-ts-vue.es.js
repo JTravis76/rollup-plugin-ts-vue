@@ -4,7 +4,7 @@ import { existsSync, readFileSync, statSync, writeFile } from 'fs';
 import { sep, extname } from 'path';
 import { createFilter } from 'rollup-pluginutils';
 import resolveId from 'resolve';
-import NodeSass from 'node-sass';
+import sass from 'sass';
 
 function getDefaultOptions() {
     return {
@@ -169,8 +169,9 @@ function vue(options, scssOptions) {
     if (options === void 0) { options = {}; }
     options = Object.assign({}, options);
     scssOptions = Object.assign({}, scssOptions);
-    scssOptions.output = scssOptions.output ? scssOptions.output : "./public/css/vue-bundle.css";
-    var filter = createFilter(['*.vue+(|x)', '**/*.vue+(|x)', '*.ts+(|x)', '**/*.ts+(|x)'], ['*.d.ts', '**/*.d.ts']);
+    scssOptions.output = scssOptions.output ? scssOptions.output : "./dist/css/site.css";
+    scssOptions.includePaths = scssOptions.includePaths ? scssOptions.includePaths : ["src/scss"];
+    var filter = createFilter(['*.vue+(|x)', '**/*.vue+(|x)', '*.ts+(|x)', '**/*.ts+(|x)', '**/*.css', '*.sass', '**/*.scss'], ['*.d.ts', '**/*.d.ts']);
     var typescript = options.typescript || ts;
     var tslib = options.tslib ||
         readFileSync(resolveId.sync('tslib/tslib.es6.js', { basedir: __dirname }), 'utf-8');
@@ -224,6 +225,10 @@ function vue(options, scssOptions) {
                 if (obj.style.trim().length > 0) {
                     styles[id] = obj.style;
                 }
+            }
+            else if (id.lastIndexOf('.scss') > -1) {
+                styles[id] = code;
+                return { code: "//== Adding css styles ==", map: null };
             }
             var transformed = typescript.transpileModule(code, {
                 fileName: id,
@@ -279,16 +284,17 @@ function vue(options, scssOptions) {
                 scss += styles[id];
             }
             if (scss.length > 0) {
-                var css = NodeSass.renderSync(Object.assign({
-                    data: scss
-                }, null)).css.toString();
-                var dest = scssOptions.output;
-                writeFile(dest, css, function (err) {
+                var css_1 = sass.renderSync({
+                    data: scss,
+                    includePaths: scssOptions.includePaths
+                }).css.toString();
+                var dest_1 = scssOptions.output;
+                writeFile(dest_1, css_1, function (err) {
                     if (err) {
                         console.error(red(err.message));
                     }
-                    else if (css) {
-                        console.log(green(dest), getSize(css.length));
+                    else if (css_1) {
+                        console.log(green(dest_1), getSize(css_1.length));
                     }
                 });
             }

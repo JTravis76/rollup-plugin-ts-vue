@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-ts-vue",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Vue bundler with Typescript and Rollup",
   "keywords": [
     "vue",
@@ -21,16 +21,17 @@
     "url": "https://github.com/JTravis76/rollup-plugin-ts-vue.git"
   },
   "dependencies": {
-    "@types/node": "^12.12.7",
-    "resolve": "^1.10.0",
-    "rollup": "^1.27.13",
-    "rollup-plugin-typescript": "^1.0.1",
-    "rollup-pluginutils": "^2.5.0",
-    "tslib": "^1.10.0",
-    "typescript": "^3.7.2"
+    "@rollup/plugin-typescript": "^4.0.0",
+    "@types/node": "^12.12.34",
+    "resolve": "^1.15.1",
+    "rollup": "^1.32.1",
+    "rollup-pluginutils": "^2.8.2",
+    "sass": "^1.26.3",
+    "tslib": "^1.11.1",
+    "typescript": "^3.8.3"
   },
   "peerDependencies": {
-    "typescript": ">=3.7.2",
-    "node-sass": "^4.13.0"
+    "typescript": ">=3.8.3",
+    "sass": ">=1.26.3"
   }
 }

@@ -1,4 +1,4 @@
-import typescript from "rollup-plugin-typescript";
+import typescript from "@rollup/plugin-typescript";
 import pkg from './package.json';
 
 export default {
@@ -10,7 +10,8 @@ export default {
 		'resolve',
 		'rollup-pluginutils',
 		'typescript',
-		'node-sass'
+        'node-sass',
+        'sass'
 	],
 
 	plugins: [
