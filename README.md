@@ -16,7 +16,6 @@ Why another plugin?? I love writing in Typescript and love the Vue single compon
 ```ts
 import resolve from "./node_modules/@rollup/plugin-node-resolve/dist/index.es";
 import vue from "./node_modules/rollup-plugin-ts-vue/dist/rollup-plugin-ts-vue.es";
-import scss from "./node_modules/rollup-plugin-scss/index.es";
 
 export default {
     input: "./src/main.ts",
@@ -39,10 +38,8 @@ export default {
         resolve(),
         // null == defaults to tsconfig.json
         vue(null, {
-            output: "./public/css/vue-bundle.css"
-        }),
-        scss({
-            output: "./public/css/site.css"
+            output: "./public/css/site.css",
+            includePaths: ["src/scss"]
         })
     ],
     external: [
@@ -164,4 +161,5 @@ When using paths in tsconfig, rollup doesn't understand how to translate so it m
 
 * 0.1.0 inital release
 * 0.2.0 fix nested template tags being removed.
-* 0.3.0 scoped CSS (beta) and Typescript Path Translation
+* 0.3.0 scoped CSS (beta) and Typescript Path Translation.
+* 0.4.0 include `sass` compiler into project vs using another plugin. Also switch from `node-sass` to `sass` due to tar@2.0 errors.
