@@ -194,11 +194,19 @@ export default function vue (options:IOptions = {}, scssOptions:IScssOptions) {
                 }).css.toString();
             
                 let dest = scssOptions.output;
-                fs.writeFile(dest, css, (err) => {
-                    if (err) {
-                        console.error(red(err.message))      
-                    } else if (css) {      
-                        console.log(green(dest), getSize(css.length))      
+                var dir = dest.substring(0, dest.lastIndexOf("/"));
+                fs.exists(dir, (e) => {
+                    if (!e) {
+                        fs.mkdir(dir, { recursive: true }, () => {});
+                    }
+                    else {
+                        fs.writeFile(dest, css, (err) => {
+                            if (err) {
+                                console.error(red(err.message))      
+                            } else if (css) {      
+                                console.log(green(dest), getSize(css.length))      
+                            }
+                        });
                     }
                 });
             }

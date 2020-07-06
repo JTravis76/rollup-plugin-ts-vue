@@ -22,7 +22,7 @@ export default {
     output: {
         name: "app",
         format: "iife",
-        file: "./public/js/app.js",
+        file: "./dist/js/app.js",
         globals: {
             "vue": "Vue",
             "vue-router": "VueRouter",
@@ -32,13 +32,13 @@ export default {
             "axios": "axios"
         },
         sourcemap: true,
-        sourcemapFile: "./public/js/app.js.map"
+        sourcemapFile: "./dist/js/app.js.map"
     },
     plugins: [
         resolve(),
         // null == defaults to tsconfig.json
         vue(null, {
-            output: "./public/css/site.css",
+            output: "./dist/css/site.css",
             includePaths: ["src/scss"]
         })
     ],
@@ -51,7 +51,7 @@ export default {
     ]
 }
 ```
-## Examples
+## Examples of Strong-Typed Vue Components
 
 *Standard Vue Mixin Object*
 ```html
@@ -119,8 +119,10 @@ div {
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 
-@Component
-export default class Component1 extends Vue {    
+@Component({
+    name: "component-template"
+})
+export default class ComponentTemplate extends Vue {    
     msg: string = "Hello World";
 
     created() {
@@ -142,8 +144,9 @@ div {
 ```
 
 ## Typescript Path Translation
-When using paths in tsconfig, rollup doesn't understand how to translate so it may resolve the module. When using something like this; `import MyMod from "@/components/my-module"`. Rollup will assuming its an external dependencies.
+When using paths in tsconfig, rollup doesn't understand how to translate so it may resolve the module. When using something like this; `import MyMod from "@/components/my-module"`. Rollup will assuming its an external dependencies. This plugin will attempt to resolve and correct the module path before passing to Rollup.
 
+*tsconfig.json*
 ```json
 {
     ...
@@ -163,3 +166,5 @@ When using paths in tsconfig, rollup doesn't understand how to translate so it m
 * 0.2.0 fix nested template tags being removed.
 * 0.3.0 scoped CSS (beta) and Typescript Path Translation.
 * 0.4.0 include `sass` compiler into project vs using another plugin. Also switch from `node-sass` to `sass` due to tar@2.0 errors.
+* 0.5.0 While working with CI/CD in Azure, Rollup failed to create the missing directory from the plugin's CSS output path: 
+    * vue(null, { output: "./dist/css/site.css", includePaths: ["src/scss"] }) 

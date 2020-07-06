@@ -24,6 +24,7 @@ export function convertToTs(code: string): {script: string, style: string} {
     }
     
     // Parse Style
+    // TODO: could have addtional style blocks
     start = code.indexOf('<style lang="scss">');
     if (start > -1) {
         end = code.indexOf('</style>');

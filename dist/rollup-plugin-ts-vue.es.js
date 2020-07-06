@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import { DiagnosticCategory } from 'typescript';
-import { existsSync, readFileSync, statSync, writeFile } from 'fs';
+import { existsSync, readFileSync, statSync, exists, mkdir, writeFile } from 'fs';
 import { sep, extname } from 'path';
 import { createFilter } from 'rollup-pluginutils';
 import resolveId from 'resolve';
@@ -289,12 +289,20 @@ function vue(options, scssOptions) {
                     includePaths: scssOptions.includePaths
                 }).css.toString();
                 var dest_1 = scssOptions.output;
-                writeFile(dest_1, css_1, function (err) {
-                    if (err) {
-                        console.error(red(err.message));
+                var dir = dest_1.substring(0, dest_1.lastIndexOf("/"));
+                exists(dir, function (e) {
+                    if (!e) {
+                        mkdir(dir, { recursive: true }, function () { });
                     }
-                    else if (css_1) {
-                        console.log(green(dest_1), getSize(css_1.length));
+                    else {
+                        writeFile(dest_1, css_1, function (err) {
+                            if (err) {
+                                console.error(red(err.message));
+                            }
+                            else if (css_1) {
+                                console.log(green(dest_1), getSize(css_1.length));
+                            }
+                        });
                     }
                 });
             }

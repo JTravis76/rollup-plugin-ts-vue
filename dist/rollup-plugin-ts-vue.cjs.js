@@ -292,12 +292,20 @@ function vue(options, scssOptions) {
                     includePaths: scssOptions.includePaths
                 }).css.toString();
                 var dest_1 = scssOptions.output;
-                fs.writeFile(dest_1, css_1, function (err) {
-                    if (err) {
-                        console.error(red(err.message));
+                var dir = dest_1.substring(0, dest_1.lastIndexOf("/"));
+                fs.exists(dir, function (e) {
+                    if (!e) {
+                        fs.mkdir(dir, { recursive: true }, function () { });
                     }
-                    else if (css_1) {
-                        console.log(green(dest_1), getSize(css_1.length));
+                    else {
+                        fs.writeFile(dest_1, css_1, function (err) {
+                            if (err) {
+                                console.error(red(err.message));
+                            }
+                            else if (css_1) {
+                                console.log(green(dest_1), getSize(css_1.length));
+                            }
+                        });
                     }
                 });
             }
