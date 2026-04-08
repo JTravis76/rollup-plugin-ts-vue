@@ -1,5 +1,7 @@
 # Rollup-Plugin-Ts-Vue
 
+> **Note**: Version 0.6.0 covers updated NPM packages due to Github's security advisory. !! Use at your own risk !!
+
 Plugin for Rollup to bundle Vue components written in TypeScript.
 
 This plugin was in inspired by [rollup-plugin-typescript](https://github.com/rollup/rollup-plugin-typescript), which uses Typescript's API. Added support for SCSS and Vue.
@@ -7,9 +9,10 @@ This plugin was in inspired by [rollup-plugin-typescript](https://github.com/rol
 Feel free to use my full boilerplate project [here on Github](https://github.com/JTravis76/vue-base-template).
 
 ## Why
+
 Why another plugin?? I love writing in Typescript and love the Vue single component concept. However, the similar plugins rely on other tools to complete the job. Wanted a way to reduce over-head of other tool-sets like; Babel, Webpack, etc. and replace with a simpler tool.
 
-> NOTE: currently `scoped` styles are **partially** supported and in-beta. Work-in-Progess
+> NOTE: currently `scoped` styles are **partially** supported and in-beta. Work-in-Progress
 
 ## Rollup Config
 
@@ -43,110 +46,115 @@ export default {
         })
     ],
     external: [
-        "vue", 
-        "vue-router", 
-        "vuex", 
+        "vue",
+        "vue-router",
+        "vuex",
         "vue-class-component",
         "axios"
     ]
 }
 ```
+
 ## Examples of Strong-Typed Vue Components
 
-*Standard Vue Mixin Object*
+_Standard Vue Mixin Object_
+
 ```html
 <template>
-    <div>{{msg}}</div>
+  <div>{{msg}}</div>
 </template>
 
 <script lang="ts">
-import Vue, { ComponentOptions } from "vue";
+  import Vue, { ComponentOptions } from "vue";
 
-export default {
+  export default {
     data() {
-        return {
-            msg: "Hello World"
-        }
-    }
-} as ComponentOptions<any>
+      return {
+        msg: "Hello World",
+      };
+    },
+  } as ComponentOptions<any>;
 </script>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>
 ```
 
-*Vue Extend*
+_Vue Extend_
+
 ```html
 <template>
-    <div>{{msg}}</div>
+  <div>{{msg}}</div>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+  import Vue from "vue";
 
-export default Vue.extend({
+  export default Vue.extend({
     data() {
-        return {
-            msg: "Hello World"
-        }
+      return {
+        msg: "Hello World",
+      };
     },
     created() {
-        let vm = this as VueComp;
-        vm.msg = "Hello World Too!!";
-    }
-});
+      let vm = this as VueComp;
+      vm.msg = "Hello World Too!!";
+    },
+  });
 
-interface VueComp extends Vue {
+  interface VueComp extends Vue {
     msg: string;
-}
+  }
 </script>
 
 <style lang="scss">
-$myColor = blue;
+  $myColor = blue;
 
-div {
-    color: $myColor;
-}
+  div {
+      color: $myColor;
+  }
 </style>
 ```
 
-*vue-property-decorator*
+_vue-property-decorator_
+
 ```html
 <template>
-    <div>{{msg}}</div>
+  <div>{{msg}}</div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+  import { Component, Vue } from "vue-property-decorator";
 
-@Component({
-    name: "component-template"
-})
-export default class ComponentTemplate extends Vue {    
-    msg: string = "Hello World";
+  @Component({
+      name: "component-template"
+  })
+  export default class ComponentTemplate extends Vue {
+      msg: string = "Hello World";
 
-    created() {
-        this.msg = "Hello World Too!!";
-        console.log(Created: life-cycle hook);
-    }
-}
+      created() {
+          this.msg = "Hello World Too!!";
+          console.log(Created: life-cycle hook);
+      }
+  }
 </script>
 
 <style lang="scss">
-div {
+  div {
     color: blue;
-    
+
     a {
-        color: green;
+      color: green;
     }
-}
+  }
 </style>
 ```
 
 ## Typescript Path Translation
+
 When using paths in tsconfig, rollup doesn't understand how to translate so it may resolve the module. When using something like this; `import MyMod from "@/components/my-module"`. Rollup will assuming its an external dependencies. This plugin will attempt to resolve and correct the module path before passing to Rollup.
 
-*tsconfig.json*
+_tsconfig.json_
+
 ```json
 {
     ...
@@ -162,9 +170,12 @@ When using paths in tsconfig, rollup doesn't understand how to translate so it m
 
 ## Change Log
 
-* 0.1.0 inital release
-* 0.2.0 fix nested template tags being removed.
-* 0.3.0 scoped CSS (beta) and Typescript Path Translation.
-* 0.4.0 include `sass` compiler into project vs using another plugin. Also switch from `node-sass` to `sass` due to tar@2.0 errors.
-* 0.5.0 While working with CI/CD in Azure, Rollup failed to create the missing directory from the plugin's CSS output path: 
-    * vue(null, { output: "./dist/css/site.css", includePaths: ["src/scss"] }) 
+- 0.1.0 inital release
+- 0.2.0 fix nested template tags being removed.
+- 0.3.0 scoped CSS (beta) and Typescript Path Translation.
+- 0.4.0 include `sass` compiler into project vs using another plugin. Also switch from `node-sass` to `sass` due to tar@2.0 errors.
+- 0.5.0 While working with CI/CD in Azure, Rollup failed to create the missing directory from the plugin's CSS output path:
+  - vue(null, { output: "./dist/css/site.css", includePaths: ["src/scss"] })
+- 0.6.0 Updated the NPM packages to the latest due to Github's security advisory.
+  - I would assume this project has been deprecated with the release of Vue 3 and Vite.
+  - This project gets 29 downloads per week. I didn't test it. !! Use at your own risk !!
